@@ -22,11 +22,11 @@ ab_group=df.groupby('Group').agg(
         Conversions=('Converted','sum'),        
             )
 ab_group['Conversion_Rate']=[Conversion_RateA,Conversion_RateB]
-#print(ab_group)
+print(ab_group)
 
 ###Conversion Lift = (B Conversion Rate − A Conversion Rate) / A Conversion Rate × 100
-Conversion_Lift = ((Conversion_RateB - Conversion_RateA) / Conversion_RateA * 100).round()
-#print(Conversion_Lift)
+Conversion_Lift = ((Conversion_RateB - Conversion_RateA) / Conversion_RateA * 100).round(2)
+print(f"CL:{Conversion_Lift}")
 
 ###Two-Proportion Z-Test
 ab_group['P_Value'] = ab_group['Conversions'] / ab_group['Users']
@@ -104,7 +104,7 @@ print(f"z-statics : {z_score_tab}")
 print(f"p-value : {p_tab}")
 
 total_users=df['User'].count()
-control_conversionA=
+
 fig, axes = plt.subplots(2, 2, figsize=(28, 16))
 fig.suptitle("A/B Testing & Conversion Experiment Analysis",
                           fontsize=20,
@@ -121,7 +121,7 @@ for cx, accent in zip(kpi_x, accents):
         edgecolor="none", facecolor="#e5e7eb",
         transform=fig.transFigure, zorder=1))
 
-def add_kpi_text(fig, x, y=kpi_y, label, value, delta=None, fontsize=30):
+def add_kpi_text(fig, x,label, value, delta=None, y=kpi_y, fontsize=30):
     left = x - card_w / 2 + 0.022
     fig.text(left, y + 0.022, label.upper(),
              ha="left", va="center",
@@ -143,8 +143,79 @@ add_kpi_text(fig, 0.50, "Treatment Conversion (B) ", f"{Conversion_RateB}", delt
 add_kpi_text(fig, 0.70, "Conversion Lift ", f"{Conversion_Lift}")
 add_kpi_text(fig, 0.90, "P Value", f"{p_value}")
 
+axes[0, 0].bar(
+        ab_group.index,
+        ab_group['Conversion_Rate']
+            )
+axes[0, 0].set_title("PCA Explained Variancea")
+axes[0, 0].set_xlabel("PCA")
+axes[0, 0].set_ylabel("Explained Variance (%)")
+for i, value in enumerate(ab_group['Conversion_Rate']):
+    axes[0, 0].text(i, value + 0.1, f"{value:.1f}%", ha="center")
 
 
+x = np.arange(len(segment_summary.index))
+width = 0.35
+
+bars_a = axes[0, 1].bar(x - width/2, segment_summary['A_Rate'], width, label='Group A')
+bars_b = axes[0, 1].bar(x + width/2, segment_summary['B_Rate'], width, label='Group B')
+
+axes[0, 1].set_title("Conversion Rate by Device")
+axes[0, 1].set_xlabel("Device")
+axes[0, 1].set_ylabel("Conversion Rate (%)")
+axes[0, 1].set_xticks(x)
+axes[0, 1].set_xticklabels(segment_summary.index)
+axes[0, 1].legend()
+results = pd.DataFrame({
+        "Test": ["Overall", "Mobile", "Desktop", "Tablet"],
+            "p-value": [0.000176, 0.000207, 0.058895, 0.832939],
+            })
+results["Significant?"] = results["p-value"].apply(lambda p: "Yes" if p < 0.05 else "No")
+
+
+ax = axes[1, 0]
+ax.axis("off")
+table = ax.table(
+        cellText=[[t, f"{p:.6f}", s] for t, p, s in results.itertuples(index=False)],
+        colLabels=["Test", "p-value", "Significant?"],
+        cellLoc="center",
+        bbox=[0, 0.05, 1, 0.85],   # [left, bottom, width, height] in axes coords
+                        )
+table.auto_set_font_size(False)
+table.set_fontsize(13)
+for row, p in enumerate(results["p-value"], start=1):
+        table[row, 2].set_facecolor("#d4edda" if p < 0.05 else "#f8d7da")
+
+for col in range(3):
+    cell = table[0, col]
+    cell.set_facecolor("#40466e")
+    cell.set_text_props(color="white", weight="bold")
+    ax.set_title("Significance Tests (α = 0.05)")
+ax.set_title("Significance Tests (α = 0.05)")
+
+import textwrap
+ax = axes[1, 1]
+ax.axis("off")
+ax.set_title("Key Insights", fontweight="bold")
+
+insights = [
+    ("1. Version B wins overall",
+     "B increased conversion from 8.70% to 10.95%."),
+    ("2. Mobile is the strongest opportunity",
+     "Mobile conversion improved by 3.14 percentage points and the difference is statistically significant."),
+    ("3. Desktop needs more evidence",
+     "Desktop performed better numerically, but the difference was not statistically significant."),
+    ("4. Tablet is not a confirmed problem",
+     "Tablet conversion was slightly lower under B, but the difference was not statistically significant."),
+]
+
+y = 0.95
+for title, body in insights:
+    ax.text(0.02, y, title, fontsize=12, fontweight="bold",
+            va="top", transform=ax.transAxes)
+    ax.text(0.02, y - 0.07, textwrap.fill(body, width=55), fontsize=10.5,
+            va="top", color="#333333", transform=ax.transAxes)
+    y -= 0.25
 
 plt.tight_layout(rect=[0, 0, 1, 0.84])
-plt.show())
+plt.show()
