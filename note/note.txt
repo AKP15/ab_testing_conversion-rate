@@ -1,0 +1,59 @@
+###Caculate Conversion Rate 
+Conversion Rate = Converted Users ÷ Total Users × 100
+
+###Caculate Conversion Lift
+Conversion Lift = (B Conversion Rate − A Conversion Rate) / A Conversion Rate × 100
+<Users who saw Version B converted at a rate approximately 22% higher than users who saw Version A.>
+
+###Two-Proportion Z-Test
+pA = xA / NA  conversion/number of user                     
+pB = xB / NB
+Calculate Pooled Proportion                                      
+p̂ = (xA + xB) / (NA + NB)
+SE = √[p̂(1 − p̂)(1/NA + 1/NB)]
+z-score = (pB − pA) / SE
+p-value = 2 × P(Z > |z|)
+
+###CI 
+diff = p_b - p_a
+SE unpool= √[pA(1−pA)/n_A + pB(1−pB)/n_B]
+lower = diff - 1.96 * se_unpooled
+upper = diff + 1.96 * se_unpooled
+Margin of error = 1.96 × SE unpool
+<+1.09 and +3.42 percentage points
+with 95% confidence.>
+
+###Segment analysis
+<Version B appears particularly effective for mobile users, while its performance on tablet users is slightly lower than Version A.>
+
+###For Desktop
+<Desktop A/B test
+z-statistic: 1.889
+p-value: 0.0589
+α: 0.05
+Decision: Fail to reject H₀
+Conclusion: We do not have enough statistical evidence to say Version B improves Desktop conversion.>
+
+###Business interpretation
+<Mobile: Strong evidence that B improves conversion.
+→ This is the strongest segment-level evidence.
+Desktop: B performs better numerically, but the evidence isn't strong enough at α = 0.05.
+→ Don't claim B significantly improves desktop conversion.
+Tablet: B is slightly lower, but p = 0.833 is very large.
+→ There is no evidence that B is actually worse on tablets. The small difference could easily be random variation.>
+
+###BS Q 
+“How much improvement can we realistically expect from Version B?”
+<“The observed improvement was +2.25 percentage points, and the 95% confidence interval suggests the true improvement is likely between approximately +1.09 and +3.42 percentage points.”>
+
+###Final A/B testing story
+Overall conversion: B = 10.95% vs A = 8.70%
+Lift: +2.25 percentage points / +22.22% relative
+Statistical test: p = 0.000176 → significant
+95% CI: +1.09 to +3.42 pp
+Mobile: significant improvement
+Desktop: positive but not significant
+Tablet: slightly negative but not significant
+Recommendation: Launch B, prioritize mobile, and monitor desktop/tablet.
+
+

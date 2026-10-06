@@ -1,0 +1,8 @@
+For Device, use:
+Most frequent category (mode)
+So:
+Device missing → Mode
+Country missing → Unknown
+Numeric columns → Median
+Invalid Age → Median
+Duplicates → Remove
